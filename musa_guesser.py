@@ -20,26 +20,54 @@ wikipedia.set_rate_limiting(True)
 RE_SQUARE_BRACKETS = re.compile(r'\[([^]]*)\]')
 
 
+class AmbiguousPronunciationError(Exception): pass
+class NoPronunciationError(Exception): pass
+
+
 def setup_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('title', help='article title to check for pronunciation')
     return parser
 
 
+def title_to_pron(title):
+    """
+    Given a Wikipedia article title, return an IPA pronunciation.
+
+    Raises:
+        musa_guesser.NoPronunciationError if none is found
+        musa_guesser.AmbiguousPronunciationError if several are found
+        wikipedia.exceptions.DisambiguationError if the title is ambiguous
+        [other wikipedia.exceptions and requests.exceptions, as appropriate]
+    """
+
+    summary = wikipedia.summary(title, sentences = 2)
+    matches = list(RE_SQUARE_BRACKETS.finditer(summary))
+
+    if len(matches) < 1:
+        raise NoPronunciationError(
+                "No IPA pronunciation found in \"{}\"".format(summary)
+                )
+    elif len(matches) > 1:
+        raise AmbiguousPronunciationError(
+                "{} pronunciations found in \"{}\"".format(
+                    len(matches),
+                    summary
+                    )
+                )
+
+    # exactly 1 match, extract the pronunciation
+    pron = matches[0].group(1)
+    return pron
+
+
 def main():
     args = setup_parser().parse_args()
     title = args.title
 
-    summary = wikipedia.summary(title, sentences = 2)
-    matches = list(RE_SQUARE_BRACKETS.finditer(summary))
-    if len(matches) == 1:
-        pron = matches[0].group(1)
-        print(title + ": " + pron)
-        return 0 # success
-    else:
-        print(title + ": {} results".format(len(matches)))
-        print(summary)
-        return 1 # failure
+    pron = title_to_pron(title)
+    print(title + ": " + pron)
+    return
 
 
 if __name__ == "__main__":
