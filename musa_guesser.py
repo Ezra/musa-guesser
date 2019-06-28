@@ -4,6 +4,8 @@
 Use Wikipedia to guess Musa spellings, e.g. for place names.
 """
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 __author__ = "Ezra Bradford"
 __version__ = "0.1.0"
 __license__ = "BSD"
