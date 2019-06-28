@@ -40,5 +40,6 @@ def main():
         print(summary)
         return 1 # failure
 
+
 if __name__ == "__main__":
     sys.exit(main())
