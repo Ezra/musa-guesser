@@ -8,6 +8,7 @@ __author__ = "Ezra Bradford"
 __version__ = "0.1.0"
 __license__ = "BSD"
 
+import argparse
 import re
 import sys
 import wikipedia
@@ -19,8 +20,16 @@ wikipedia.set_rate_limiting(True)
 RE_SQUARE_BRACKETS = re.compile(r'\[[^]]*\]')
 
 
+def setup_parser():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('title', help='article title to check for pronunciation')
+    return parser
+
+
 def main():
-    title = "xi'an"
+    args = setup_parser().parse_args()
+    title = args.title
+
     summary = wikipedia.summary(title, sentences = 2)
     matches = RE_SQUARE_BRACKETS.findall(summary)
     if len(matches) == 1:
