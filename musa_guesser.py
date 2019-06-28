@@ -34,10 +34,11 @@ def main():
     matches = RE_SQUARE_BRACKETS.findall(summary)
     if len(matches) == 1:
         print(title + ": " + matches[0])
+        return 0 # success
     else:
         print(title + ": {} results".format(len(matches)))
         print(summary)
-    return
+        return 1 # failure
 
 if __name__ == "__main__":
     sys.exit(main())
