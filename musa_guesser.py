@@ -17,7 +17,7 @@ import wikipedia
 # limit ourselves to one request every 50ms
 wikipedia.set_rate_limiting(True)
 
-RE_SQUARE_BRACKETS = re.compile(r'\[[^]]*\]')
+RE_SQUARE_BRACKETS = re.compile(r'\[([^]]*)\]')
 
 
 def setup_parser():
@@ -31,9 +31,10 @@ def main():
     title = args.title
 
     summary = wikipedia.summary(title, sentences = 2)
-    matches = RE_SQUARE_BRACKETS.findall(summary)
+    matches = list(RE_SQUARE_BRACKETS.finditer(summary))
     if len(matches) == 1:
-        print(title + ": " + matches[0])
+        pron = matches[0].group(1)
+        print(title + ": " + pron)
         return 0 # success
     else:
         print(title + ": {} results".format(len(matches)))
