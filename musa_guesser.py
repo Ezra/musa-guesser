@@ -15,6 +15,8 @@ import re
 import sys
 import wikipedia
 
+from musa_table import ipa_to_musas
+
 
 # limit ourselves to one request every 50ms
 wikipedia.set_rate_limiting(True)
@@ -63,12 +65,17 @@ def title_to_pron(title):
     return pron
 
 
+def ipa_to_musa(pron):
+    return ''.join([ipa_to_musas.get(char, char)[0] for char in pron])
+
+
 def main():
     args = setup_parser().parse_args()
     title = args.title
 
     pron = title_to_pron(title)
-    print(title + ": " + pron)
+    musa = ipa_to_musa(pron)
+    print(': '.join([title, pron, musa]))
     return
 
 

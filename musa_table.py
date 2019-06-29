@@ -65,3 +65,6 @@ def test_it():
 
 if __name__ == '__main__':
     test_it()
+else:
+    # load for importing
+    musa_to_ipas, ipa_to_musas = load_tables()
