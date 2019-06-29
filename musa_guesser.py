@@ -11,6 +11,7 @@ __version__ = "0.1.0"
 __license__ = "BSD"
 
 import argparse
+import copy
 import re
 import sys
 import wikipedia
@@ -23,8 +24,14 @@ wikipedia.set_rate_limiting(True)
 
 RE_SQUARE_BRACKETS = re.compile(r'\[([^]]*)\]')
 
+# add syllable break
+my_dict = copy.deepcopy(ipa_to_musas)
+my_dict['.'] = list(chr(int('E100', 16)))
+
+
 
 class AmbiguousPronunciationError(Exception): pass
+
 class NoPronunciationError(Exception): pass
 
 
@@ -66,7 +73,7 @@ def title_to_pron(title):
 
 
 def ipa_to_musa(pron):
-    return ''.join([ipa_to_musas.get(char, char)[0] for char in pron])
+    return ''.join([my_dict.get(char, char)[0] for char in pron])
 
 
 def main():
@@ -75,7 +82,7 @@ def main():
 
     pron = title_to_pron(title)
     musa = ipa_to_musa(pron)
-    print(': '.join([title, pron, musa]))
+    print(' '.join([title, pron, musa]))
     return
 
 
